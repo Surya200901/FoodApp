@@ -6,21 +6,23 @@ import Register from './components/Register';
 import LandingPage from './components/LandingPage';
 import Home from './components/Home';
 import Header from './components/Header';
+import AdminLogin from './components/AdminLogin';
+import AdminDashboard from './components/AdminDashboard';
+import AdminRegister from './components/AdminRegister';
 
 function AppRoutes() {
   const isAuthenticated = !!localStorage.getItem('token');
+  const isAdminAuthenticated = !!localStorage.getItem('adminToken');
   const location = useLocation();
 
   const showPublicHeader =
-    !isAuthenticated &&
-    ['/', '/login', '/register'].includes(location.pathname);
+    !isAuthenticated && !isAdminAuthenticated && ['/', '/login', '/register', '/admin/login'].includes(location.pathname);
 
   const showDashboardHeader =
     isAuthenticated && location.pathname.startsWith('/home');
 
   return (
     <>
-      {/* Header Logic */}
       {showPublicHeader && <Header variant="public" />}
       {showDashboardHeader && <Header variant="dashboard" />}
 
@@ -28,30 +30,23 @@ function AppRoutes() {
         {/* Public Landing */}
         <Route
           path="/"
-          element={isAuthenticated ? <Navigate to="/home" /> : <LandingPage />}
+          element={(isAuthenticated ? <Navigate to="/home" /> : (isAdminAuthenticated ? <Navigate to="/admin" /> : <LandingPage />))}
         />
 
-        {/* Login / Register */}
-        <Route
-          path="/login"
-          element={isAuthenticated ? <Navigate to="/home" /> : <Login />}
-        />
-        <Route
-          path="/register"
-          element={isAuthenticated ? <Navigate to="/home" /> : <Register />}
-        />
+        {/* User Auth */}
+        <Route path="/login" element={isAuthenticated ? <Navigate to="/home" /> : <Login />} />
+        <Route path="/register" element={isAuthenticated ? <Navigate to="/home" /> : <Register />} />
 
-        {/* Protected Dashboard */}
-        <Route
-          path="/home"
-          element={isAuthenticated ? <Home /> : <Navigate to="/" />}
-        />
+        {/* Admin Auth */}
+        <Route path="/admin/login" element={isAdminAuthenticated ? <Navigate to="/admin" /> : <AdminLogin />} />
+        <Route path="/admin/register" element={isAdminAuthenticated ? <Navigate to="/admin" /> : <AdminRegister />} />
+        <Route path="/admin" element={isAdminAuthenticated ? <AdminDashboard /> : <Navigate to="/admin/login" />} />
+
+        {/* User Dashboard */}
+        <Route path="/home" element={isAuthenticated ? <Home /> : <Navigate to="/" />} />
 
         {/* Fallback */}
-        <Route
-          path="*"
-          element={<Navigate to={isAuthenticated ? '/home' : '/'} />}
-        />
+        <Route path="*" element={<Navigate to={isAuthenticated ? '/home' : (isAdminAuthenticated ? '/admin' : '/')} />} />
       </Routes>
     </>
   );

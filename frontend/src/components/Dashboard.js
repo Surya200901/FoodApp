@@ -1,4 +1,6 @@
 import React from 'react';
+import bannerImg from '../assets/images/dine.jpg';
+
 
 const foodCategories = [
   { label: 'Pizza', img: 'https://images.pexels.com/photos/2619967/pexels-photo-2619967.jpeg?auto=compress&w=600' },
@@ -68,7 +70,7 @@ const styles = {
     padding: 0,
   },
   bannerSection: {
-    background: 'url(https://images.pexels.com/photos/70497/pexels-photo-70497.jpeg?auto=compress&w=1500) center/cover',
+    background: `url(${bannerImg}) center/cover`,
     minHeight: 210,
     display: 'flex',
     alignItems: 'center',
